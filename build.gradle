@@ -38,7 +38,7 @@ dependencies {
 pluginBundle {
     website = 'https://github.com/advantageous/docker-test-plugin'
     vcsUrl = 'https://github.com/advantageous/docker-test-plugin.git'
-    description = 'Spin up docker containers for unit tests.'
+    description = 'Spin up docker containers for integration tests.'
     tags = ['testing', 'docker', 'container', 'integration testing', 'continuous integration']
 
     plugins {
@@ -85,7 +85,7 @@ uploadArchives {
             pom.project {
                 packaging 'jar'
                 url 'https://github.com/advantageous/docker-test-plugin'
-                description 'Marathon Deployer Plugin for Gradle'
+                description 'Spin up docker containers for integration tests.'
                 name project.name
 
                 scm {
