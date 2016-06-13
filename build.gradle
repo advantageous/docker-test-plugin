@@ -63,6 +63,12 @@ task sourcesJar(type: Jar) {
     classifier = 'sources'
 }
 
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
 uploadArchives {
     repositories {
         mavenDeployer {
