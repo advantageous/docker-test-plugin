@@ -51,5 +51,12 @@ public class DockerTestPlugin implements Plugin<Project> {
 
         dockerTest.dependsOn startTestDocker
         dockerTest.finalizedBy stopTestDocker
+
+        //TODO: need to figure out how to make the normal tests skip these tests
+//        project.test {
+//            useJUnit {
+//                excludeCategories 'io.advantageous.test.DockerTest'
+//            }
+//        }
     }
 }
