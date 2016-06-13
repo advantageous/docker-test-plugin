@@ -11,9 +11,7 @@ public class DockerTestPlugin implements Plugin<Project> {
         project.extensions.testDockerContainers = testDockerContainers
 
         project.task("showDockerContainers") << {
-            project.extensions.testDockerContainers.forEach {
-                println it
-            }
+            project.extensions.testDockerContainers.forEach { println it }
         }
 
         project.task("initDocker", description: "Initialize the docker environment. (docker-machine on mac)") << {
@@ -53,12 +51,5 @@ public class DockerTestPlugin implements Plugin<Project> {
 
         dockerTest.dependsOn startTestDocker
         dockerTest.finalizedBy stopTestDocker
-
-        project.test {
-            useJUnit {
-                excludeCategories 'io.advantageous.test.DockerTest'
-            }
-        }
-
     }
 }

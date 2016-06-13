@@ -1,7 +1,5 @@
 package io.advantageous.gradle.docker
 
-import io.advantageous.gradle.docker.DockerContainer
-import io.advantageous.gradle.docker.DockerUtils
 import org.junit.Assert
 import org.junit.Test
 
