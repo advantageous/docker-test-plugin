@@ -42,7 +42,7 @@ pluginBundle {
     tags = ['testing', 'docker', 'container', 'integration testing', 'continuous integration']
 
     plugins {
-        greetingsPlugin {
+        dockerTestPlugin {
             id = 'io.advantageous.docker-test'
             displayName = 'Docker Integration Tests'
         }
