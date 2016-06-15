@@ -1,47 +1,29 @@
 package io.advantageous.gradle.docker
 
-import java.util.concurrent.TimeUnit
-
 class DockerUtils {
 
     static void initDocker() {
 
-        if ("Mac OS X".equals(System.getProperty("os.name"))) {
-
-            if (!"which docker-machine".execute().text)
-                throw new IllegalStateException("could not execute docker-machine")
-
-            println "Starting Docker Machine..."
-            def startProc = "docker-machine start default".execute()
-            startProc.waitFor(3, TimeUnit.MINUTES)
-            if (startProc.exitValue()) {
-                println startProc.err.text
+        def runningResult = runCommand "docker", "inspect", "-f", "{{.State.Running}}", "docker-http"
+        println "Docker running check: " + runningResult[1]
+        if (runningResult[1] != "true") {
+            println "Starting socat"
+            def dockerId = runCommand("docker ps -q -l".split(" "))[1]
+            String[] command
+            if (dockerId.toString().length() > 1) {
+                command = ["docker", "start", dockerId]
             } else {
-                println startProc.text
+                command = new DockerContainer("socat")
+                        .containerName("docker-http")
+                        .portMapping(container: 2375, host: 2375)
+                        .image("sequenceiq/socat")
+                        .volume(container: "/var/run/docker.sock", host: "/var/run/docker.sock")
+                        .runCommand()
             }
 
-            def runningResult = runCommand "docker", "inspect", "-f", "{{.State.Running}}", "docker-http"
-            println "Docker running check: " + runningResult[1]
-            if (runningResult[1] != "true") {
-                println "Starting socat on Mac OS X"
-                def dockerId = runCommand("docker ps -q -l".split(" "))[1]
-                String[] command
-                if (dockerId.toString().length() > 1) {
-                    command = ["docker", "start", dockerId]
-                } else {
-                    command = new DockerContainer("socat")
-                            .containerName("docker-http")
-                            .portMapping(container: 2375, host: 2375)
-                            .image("sequenceiq/socat")
-                            .volume(container: "/var/run/docker.sock", host: "/var/run/docker.sock")
-                            .runCommand()
-
-                }
-
-                def result = runCommand command
-                if (result[0] != 0) {
-                    throw new IllegalStateException(result[1].toString())
-                }
+            def result = runCommand command
+            if (result[0] != 0) {
+                throw new IllegalStateException(result[1].toString())
             }
         }
     }
@@ -49,17 +31,19 @@ class DockerUtils {
     static Map<String, String> getDockerEnv() {
 
         def envMap = [:]
-
         if ("Mac OS X".equals(System.getProperty("os.name"))) {
-            println "Exporting docker ENV"
-            envMap = "docker-machine env default".execute().text
-                    .split('\n')
-                    .findAll { it.startsWith('export') }
-                    .collect { it.replace('export', '').replace('"', '').trim() }
-                    .collect { it.split('=') }
-                    .collectEntries { [it[0], it[1]] }
+            if ("which docker-machine".execute().text) {
+                if ("docker info".execute().text.contains("Cannot connect to the Docker daemon")) {
+                    println "Exporting docker ENV"
+                    envMap = "docker-machine env default".execute().text
+                            .split('\n')
+                            .findAll { it.startsWith('export') }
+                            .collect { it.replace('export', '').replace('"', '').trim() }
+                            .collect { it.split('=') }
+                            .collectEntries { [it[0], it[1]] }
+                }
+            }
         }
-
         envMap
     }
 
