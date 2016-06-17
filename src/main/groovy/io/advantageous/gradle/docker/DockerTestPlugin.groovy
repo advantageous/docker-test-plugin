@@ -24,7 +24,6 @@ public class DockerTestPlugin implements Plugin<Project> {
             project.extensions.testDockerContainers.forEach {
                 def result = DockerUtils.runCommand it.runCommand()
                 if (result[0] != 0) throw new IllegalStateException(result[1].toString())
-
                 if (it.waitAfterRun > 0) {
                     sleep(it.waitAfterRun * 1_000)
                 }
