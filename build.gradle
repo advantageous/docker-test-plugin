@@ -10,7 +10,7 @@ buildscript {
 }
 
 group 'io.advantageous.gradle'
-version '0.1.0'
+version '0.1.1'
 
 apply plugin: 'maven'
 apply plugin: 'signing'
@@ -33,6 +33,7 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
     compile 'junit:junit:4.11'
+    compile 'io.advantageous.boon:boon-util:0.5.7'
 }
 
 pluginBundle {
