@@ -21,15 +21,12 @@ class DockerUtilsTest {
                 .runCommand()
 
         def result = DockerUtils.runCommand command
-        println result[1]
         Assert.assertEquals 0, result[0]
 
         result = DockerUtils.stopContainer "httpd"
-        println result[1]
         Assert.assertEquals 0, result[0]
 
         result = DockerUtils.removeContainer "httpd"
-        println result[1]
         Assert.assertEquals 0, result[0]
     }
 }

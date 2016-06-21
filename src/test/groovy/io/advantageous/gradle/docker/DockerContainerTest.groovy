@@ -12,9 +12,10 @@ class DockerContainerTest {
                 .containerName("docker-http")
                 .portMapping(container: 2375, host: 2375)
                 .volume(container: "/var/run/docker.sock", host: "/var/run/docker.sock")
-                .image("sequenceiq/socat")
+                .image("sequenceiq/socat").env("foo":"bar")
                 .runCommand()
 
-        Assert.assertEquals("docker run -d -p 2375:2375 --volume=/var/run/docker.sock:/var/run/docker.sock --name=docker-http sequenceiq/socat".split(" "), socat)
+        Assert.assertEquals(
+                "docker run -d -p 2375:2375 --volume=/var/run/docker.sock:/var/run/docker.sock --env='FOO=bar' --name=docker-http sequenceiq/socat", socat)
     }
 }

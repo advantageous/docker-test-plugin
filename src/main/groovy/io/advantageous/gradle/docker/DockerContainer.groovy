@@ -83,7 +83,7 @@ class DockerContainer {
         return containerName
     }
 
-    public String[] runCommand() {
+    public String runCommand() {
         StringBuilder builder = new StringBuilder()
 
         builder.append("docker run")
@@ -107,11 +107,11 @@ class DockerContainer {
         if (env.size() > 0) {
             env.entrySet().stream().forEach { entry ->
                 builder.append(" --env=")
-                        .append('"')
+                        .append("'")
                         .append(entry.key.toString().toUpperCase())
                         .append('=')
                         .append(entry.value)
-                        .append('"')
+                        .append("'")
 
             }
         }
@@ -134,9 +134,7 @@ class DockerContainer {
             builder.append(" ").append(runArgs)
         }
 
-        println builder.toString()
-
-        builder.toString().split(" ")
+        builder.toString()
     }
 
 }

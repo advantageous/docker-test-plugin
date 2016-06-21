@@ -4,14 +4,14 @@ class DockerUtils {
 
     static void initDocker() {
 
-        def runningResult = runCommand "docker", "inspect", "-f", "{{.State.Running}}", "docker-http"
+        def runningResult = runCommand "docker inspect -f {{.State.Running}} docker-http"
         println "Docker running check: " + runningResult[1]
         if (runningResult[1] != "true") {
             println "Starting socat"
-            def dockerId = runCommand("docker ps -q -l".split(" "))[1]
-            String[] command
+            def dockerId = runCommand("docker ps -q -l")[1]
+            String command
             if (dockerId.toString().length() > 1) {
-                command = ["docker", "start", dockerId]
+                command = "docker start $dockerId"
             } else {
                 command = new DockerContainer("socat")
                         .containerName("docker-http")
@@ -66,14 +66,20 @@ class DockerUtils {
         runCommand("docker", "build", "-t", dockerCoordinates(namespace, projectName, projectVersion), "build/")
     }
 
-    static runCommand(String... command) {
+    static runCommand(String command) {
+
+
+        println("Running command $command")
+
+        String[] args = ["/bin/sh", "-c",  "$command"]
 
         def stringBuilder = new StringBuilder()
         def processBuilder = new ProcessBuilder()
-                .command(command)
+                .command(args)
                 .redirectErrorStream(true)
 
         processBuilder.environment().putAll(getDockerEnv())
+
 
         def process = processBuilder.start()
         process.waitFor()
@@ -90,11 +96,11 @@ class DockerUtils {
 
     static stopContainer(String containerName) {
         println("Stop " + containerName)
-        runCommand "docker", "stop", containerName
+        runCommand "docker stop $containerName"
     }
 
     static removeContainer(String containerName) {
         println("Remove " + containerName)
-        runCommand "docker", "rm", containerName
+        runCommand "docker rm $containerName"
     }
 }
