@@ -10,6 +10,7 @@ class DockerContainer {
     private boolean publishAll
     private ports = [:]
     private volumes = [:]
+    private env = [:]
     private boolean detach = true
     private String runArgs
 
@@ -57,6 +58,17 @@ class DockerContainer {
         return this
     }
 
+
+    DockerContainer env(Map map) {
+
+        if (map.containsKey("name") && map.containsKey("value") && map.size() ==2) {
+            env[map.name] = map.value
+        } else {
+            env.putAll(map)
+        }
+        return this
+    }
+
     DockerContainer detach(boolean detach) {
         this.detach = detach
         return this
@@ -91,6 +103,19 @@ class DockerContainer {
                 builder.append(" --volume=").append(entry.key).append(':').append(entry.value)
             }
         }
+
+        if (env.size() > 0) {
+            env.entrySet().stream().forEach { entry ->
+                builder.append(" --env=")
+                        .append('"')
+                        .append(entry.key.toString().toUpperCase())
+                        .append('=')
+                        .append(entry.value)
+                        .append('"')
+
+            }
+        }
+
 
         if (containerName) {
             builder.append(" --name=").append(containerName)
