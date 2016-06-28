@@ -54,7 +54,7 @@ class DockerContainer {
     }
 
     DockerContainer portMapping(Map map) {
-        ports[map.container] = map.host
+        ports[map.host] = map.container
         return this
     }
 

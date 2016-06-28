@@ -2,32 +2,6 @@ package io.advantageous.gradle.docker
 
 class DockerUtils {
 
-    static void initDocker() {
-
-        def runningResult = runCommand "docker inspect -f {{.State.Running}} docker-http"
-        println "Docker running check: " + runningResult[1]
-        if (runningResult[1] != "true") {
-            println "Starting socat"
-            def dockerId = runCommand("docker ps -q -l")[1]
-            String command
-            if (dockerId.toString().length() > 1) {
-                command = "docker start $dockerId"
-            } else {
-                command = new DockerContainer("socat")
-                        .containerName("docker-http")
-                        .portMapping(container: 2375, host: 2375)
-                        .image("sequenceiq/socat")
-                        .volume(container: "/var/run/docker.sock", host: "/var/run/docker.sock")
-                        .runCommand()
-            }
-
-            def result = runCommand command
-            if (result[0] != 0) {
-                throw new IllegalStateException(result[1].toString())
-            }
-        }
-    }
-
     static Map<String, String> getDockerEnv() {
 
         def envMap = [:]

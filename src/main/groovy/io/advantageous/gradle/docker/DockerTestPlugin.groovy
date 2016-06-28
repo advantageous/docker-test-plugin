@@ -14,13 +14,7 @@ public class DockerTestPlugin implements Plugin<Project> {
             project.extensions.testDockerContainers.forEach { println it }
         }
 
-        project.task("initDocker", description: "Initialize the docker environment. (docker-machine on mac)") << {
-            DockerUtils.initDocker()
-        }
-        def initDocker = project.tasks.getByName("initDocker")
-
-        project.task("startTestDocker", dependsOn: initDocker,
-                description: "Start up dependent docker containers for testing") << {
+        project.task("startTestDocker", description: "Start up dependent docker containers for testing") << {
             project.extensions.testDockerContainers.forEach {
                 def result = DockerUtils.runCommand it.runCommand()
                 if (result[0] != 0) throw new IllegalStateException(result[1].toString())

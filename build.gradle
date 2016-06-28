@@ -10,7 +10,7 @@ buildscript {
 }
 
 group 'io.advantageous.gradle'
-version '0.1.4'
+version '0.1.6'
 
 apply plugin: 'maven'
 apply plugin: 'signing'
