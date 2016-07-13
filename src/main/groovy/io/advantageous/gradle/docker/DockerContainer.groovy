@@ -123,7 +123,7 @@ class DockerContainer {
 
 
         if (hostName) {
-            builder.append(" --hostname==").append(hostName)
+            builder.append(" --hostname=").append(hostName)
         }
 
         if (image) {
