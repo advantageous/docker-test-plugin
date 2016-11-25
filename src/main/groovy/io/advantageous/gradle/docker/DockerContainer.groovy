@@ -1,5 +1,7 @@
 package io.advantageous.gradle.docker
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
 class DockerContainer {
 
     private final String name
@@ -105,14 +107,14 @@ class DockerContainer {
         }
 
         if (env.size() > 0) {
+            def delimiter = Os.isFamily(Os.FAMILY_WINDOWS) ? "" : "'";
             env.entrySet().stream().forEach { entry ->
                 builder.append(" --env=")
-                        .append("'")
+                        .append(delimiter)
                         .append(entry.key.toString().toUpperCase())
                         .append('=')
                         .append(entry.value)
-                        .append("'")
-
+                        .append(delimiter)
             }
         }
 
@@ -136,5 +138,4 @@ class DockerContainer {
 
         builder.toString()
     }
-
 }
