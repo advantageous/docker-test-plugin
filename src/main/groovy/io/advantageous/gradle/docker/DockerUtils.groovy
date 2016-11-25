@@ -1,5 +1,7 @@
 package io.advantageous.gradle.docker
 
+import org.apache.tools.ant.taskdefs.condition.Os
+
 class DockerUtils {
 
     static Map<String, String> getDockerEnv() {
@@ -14,7 +16,7 @@ class DockerUtils {
                             .findAll { it.startsWith('export') }
                             .collect { it.replace('export', '').replace('"', '').trim() }
                             .collect { it.split('=') }
-                            .collectEntries { [it[0], it[1]] }
+                            .collectEntries { [it[0], it[1]]}
                 }
             }
         }
@@ -40,12 +42,18 @@ class DockerUtils {
         runCommand("docker", "build", "-t", dockerCoordinates(namespace, projectName, projectVersion), "build/")
     }
 
+    static prepareArgs(String command, boolean runningOnWindows) {
+        if (!runningOnWindows)
+            return ["/bin/sh", "-c", "$command"]
+        else
+            return ["cmd", "/c", "$command"]
+    }
+
     static runCommand(String command) {
-
-
         println("Running command $command")
 
-        String[] args = ["/bin/sh", "-c",  "$command"]
+        def runningOnWindows = Os.isFamily(Os.FAMILY_WINDOWS);
+        String[] args = prepareArgs(command, runningOnWindows);
 
         def stringBuilder = new StringBuilder()
         def processBuilder = new ProcessBuilder()

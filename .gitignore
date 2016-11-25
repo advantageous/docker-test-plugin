@@ -1,5 +1,9 @@
 .gradle
 .idea
+.settings
+.project
+.classpath
 rbss-devops-plugin.iml
 build/
 rbss-platform-deploy-gradle-plugin.iml
+/bin/
