@@ -11,13 +11,13 @@ public class DockerTestPlugin implements Plugin<Project> {
         project.extensions.testDockerContainers = testDockerContainers
 
         project.task("showDockerContainers") {
-            project.doLast {
+            doLast {
                 project.extensions.testDockerContainers.forEach { println it }
             }
         }
 
         project.task("startTestDocker", description: "Start up dependent docker containers for testing") {
-            project.doLast {
+            doLast {
                 project.extensions.testDockerContainers.forEach {
                     def result = DockerUtils.runCommand it.runCommand()
                     if (result[0] != 0) throw new IllegalStateException(result[1].toString())
@@ -30,7 +30,7 @@ public class DockerTestPlugin implements Plugin<Project> {
         def startTestDocker = project.tasks.getByName("startTestDocker")
 
         project.task("stopTestDocker", description: "Stop docker containers used in tests") {
-            project.doLast {
+            doLast {
                 project.extensions.testDockerContainers.forEach {
                     def result = DockerUtils.stopContainer it.getContainerName()
                     if (result[0] != 0) throw new IllegalStateException(result[1].toString())
@@ -42,7 +42,7 @@ public class DockerTestPlugin implements Plugin<Project> {
         def stopTestDocker = project.tasks.getByName("stopTestDocker")
 
         project.task("dockerTest", type: Test, description: "Run docker integration tests") {
-            project.doLast {
+            doLast {
                 useJUnit {
                     includeCategories 'io.advantageous.test.DockerTest'
                 }
