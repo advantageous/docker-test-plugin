@@ -10,34 +10,42 @@ public class DockerTestPlugin implements Plugin<Project> {
         def testDockerContainers = project.container(DockerContainer)
         project.extensions.testDockerContainers = testDockerContainers
 
-        project.task("showDockerContainers") << {
-            project.extensions.testDockerContainers.forEach { println it }
+        project.task("showDockerContainers") {
+            project.doLast {
+                project.extensions.testDockerContainers.forEach { println it }
+            }
         }
 
-        project.task("startTestDocker", description: "Start up dependent docker containers for testing") << {
-            project.extensions.testDockerContainers.forEach {
-                def result = DockerUtils.runCommand it.runCommand()
-                if (result[0] != 0) throw new IllegalStateException(result[1].toString())
-                if (it.waitAfterRun > 0) {
-                    sleep(it.waitAfterRun * 1_000)
+        project.task("startTestDocker", description: "Start up dependent docker containers for testing") {
+            project.doLast {
+                project.extensions.testDockerContainers.forEach {
+                    def result = DockerUtils.runCommand it.runCommand()
+                    if (result[0] != 0) throw new IllegalStateException(result[1].toString())
+                    if (it.waitAfterRun > 0) {
+                        sleep(it.waitAfterRun * 1_000)
+                    }
                 }
             }
         }
         def startTestDocker = project.tasks.getByName("startTestDocker")
 
-        project.task("stopTestDocker", description: "Stop docker containers used in tests") << {
-            project.extensions.testDockerContainers.forEach {
-                def result = DockerUtils.stopContainer it.getContainerName()
-                if (result[0] != 0) throw new IllegalStateException(result[1].toString())
-                result = DockerUtils.removeContainer it.getContainerName()
-                if (result[0] != 0) throw new IllegalStateException(result[1].toString())
+        project.task("stopTestDocker", description: "Stop docker containers used in tests") {
+            project.doLast {
+                project.extensions.testDockerContainers.forEach {
+                    def result = DockerUtils.stopContainer it.getContainerName()
+                    if (result[0] != 0) throw new IllegalStateException(result[1].toString())
+                    result = DockerUtils.removeContainer it.getContainerName()
+                    if (result[0] != 0) throw new IllegalStateException(result[1].toString())
+                }
             }
         }
         def stopTestDocker = project.tasks.getByName("stopTestDocker")
 
-        project.task("dockerTest", type: Test, description: "Run docker integration tests") << {
-            useJUnit {
-                includeCategories 'io.advantageous.test.DockerTest'
+        project.task("dockerTest", type: Test, description: "Run docker integration tests") {
+            project.doLast {
+                useJUnit {
+                    includeCategories 'io.advantageous.test.DockerTest'
+                }
             }
         }
         def dockerTest = project.tasks.getByName("dockerTest")
